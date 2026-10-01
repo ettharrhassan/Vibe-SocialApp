@@ -1,21 +1,19 @@
-
 import { useForm } from "react-hook-form";
 import type { signUpDataType } from "./signup.types";
 
 export default function SignUp() {
-  const { handleSubmit, register, formState, watch } =
-    useForm({
-      defaultValues: {
-        name: "",
-        username: "",
-        email: "",
-        dateOfBirth: "",
-        gender: "",
-        password: "",
-        rePassword: "",
-      },
-      mode: "onBlur",
-    });
+  const { handleSubmit, register, formState, watch } = useForm<signUpDataType>({
+    defaultValues: {
+      name: "",
+      username: "",
+      email: "",
+      dateOfBirth: undefined,
+      gender: "",
+      password: "",
+      rePassword: "",
+    },
+    mode: "onBlur",
+  });
 
   // console.log(formState.errors);
 

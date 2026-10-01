@@ -1,4 +1,4 @@
-export interface signUpDataTypegit commit -m "sec commit" {
+export interface signUpDataType {
   name: string;
   username: string;
   email: string;
