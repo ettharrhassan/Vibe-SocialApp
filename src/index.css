@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@import "@heroui/styles";
+
+@theme {
+  --color-deep: #5a123d;
+  --color-burgundy: #8b1e5d;
+  --color-primePink: #c44569;
+  --color-lightPink: #f78fb3;
+  --color-darkText: #0f172b;
+  --color-lightText: #314158;
+  --color-softRose:#fff7fe
+}
