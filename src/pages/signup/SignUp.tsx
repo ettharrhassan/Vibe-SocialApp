@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+
 import { useForm } from "react-hook-form";
 import type { signUpDataType } from "./signup.types";
 
 export default function SignUp() {
-  const { handleSubmit, register, formState, setError, getValues, watch } =
+  const { handleSubmit, register, formState, watch } =
     useForm({
       defaultValues: {
         name: "",
