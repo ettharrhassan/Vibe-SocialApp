@@ -8,5 +8,23 @@
   --color-lightPink: #f78fb3;
   --color-darkText: #0f172b;
   --color-lightText: #314158;
-  --color-softRose:#fff7fe
+  --color-softRose: #fff7fe;
+}
+
+input[type="date"] {
+  color: var(--color-lightPink);
+}
+
+input[type="date"]::-webkit-datetime-edit {
+  color: var(--color-lightPink);
+}
+
+input[type="date"]::-webkit-datetime-edit-text {
+  color: var(--color-lightPink);
+}
+
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  color: var(--color-lightPink);
 }

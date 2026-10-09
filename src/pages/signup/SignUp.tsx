@@ -1,27 +1,52 @@
 import { useForm } from "react-hook-form";
+import "../../schemas/signup.schema";
+import { toast } from "@heroui/react";
+import axios, { isAxiosError } from "axios";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { schema } from "../../schemas/signup.schema";
 import type { signUpDataType } from "./signup.types";
+import { useState } from "react";
+import { Hearts } from "react-loader-spinner";
 
 export default function SignUp() {
-  const { handleSubmit, register, formState, watch } = useForm<signUpDataType>({
+  const { handleSubmit, register, formState } = useForm({
     defaultValues: {
       name: "",
       username: "",
       email: "",
-      dateOfBirth: undefined,
-      gender: "",
+      dateOfBirth: new Date(),
+      gender: "male",
       password: "",
       rePassword: "",
     },
+
+    resolver: zodResolver(schema),
     mode: "onBlur",
   });
 
-  // console.log(formState.errors);
+  const [loading, setLoading] = useState(false);
 
-  function myHandleSubmit(values: signUpDataType) {
-    // if (values.rePassword !== values.password) {
-    //   setError("rePassword",{message:"Password and RePassword do not match."})
-    //   return
-    // }
+  console.log(loading, setLoading);
+
+  async function myHandleSubmit(values: signUpDataType) {
+    if (loading == true) {
+      return;
+    }
+    try {
+      setLoading(true);
+      let { data } = await axios.post(
+        "https://route-posts.routemisr.com/users/signup",
+        values,
+      );
+      console.log(data);
+      toast.success(data.message);
+    } catch (error) {
+      if (isAxiosError(error)) {
+        toast.danger(error.response?.data.message);
+      }
+    } finally {
+      setLoading(false);
+    }
 
     console.log(values);
   }
@@ -110,13 +135,16 @@ export default function SignUp() {
                   placeholder="Enter Your Name"
                   id="name"
                   className="focus:border-primePink focus:outline-none focus:ring-0 my-2 border border-lightPink bg-softRose shadow p-3 rounded-xl placeholder:text-lightPink "
-                  {...register("name", {
-                    required: { value: true, message: "Name Is Required" },
-                    minLength: {
-                      value: 3,
-                      message: "Name Must Be At Least 3 Letters",
-                    },
-                  })}
+                  {...register(
+                    "name",
+                    //    {
+                    //   required: { value: true, message: "Name Is Required" },
+                    //   minLength: {
+                    //     value: 3,
+                    //     message: "Name Must Be At Least 3 Letters",
+                    //   },
+                    // }
+                  )}
                 />
 
                 {formState.errors.name && (
@@ -131,13 +159,16 @@ export default function SignUp() {
                   type="text"
                   id="userName"
                   placeholder="Enter A UserName"
-                  {...register("username", {
-                    required: { value: true, message: "UserName Is Required" },
-                    minLength: {
-                      value: 5,
-                      message: "UserName Must Be At Least 5 Letters",
-                    },
-                  })}
+                  {...register(
+                    "username",
+                    //   {
+                    //   required: { value: true, message: "UserName Is Required" },
+                    //   minLength: {
+                    //     value: 5,
+                    //     message: "UserName Must Be At Least 5 Letters",
+                    //   },
+                    // }
+                  )}
                   className="my-2 border border-lightPink focus:border-primePink focus:outline-none focus:ring-0 bg-softRose shadow p-3 rounded-xl placeholder:text-lightPink "
                 />
                 {formState.errors.username && (
@@ -152,14 +183,7 @@ export default function SignUp() {
                   type="email"
                   id="email"
                   placeholder="Enter Your Email Address"
-                  {...register("email", {
-                    required: { value: true, message: "Email Is Required" },
-                    pattern: {
-                      value:
-                        /[a-z0-9\._%+!$&*=^|~#%'`?{}/\-]+@([a-z0-9\-]+\.){1,}([a-z]{2,16})/,
-                      message: "Please enter a valid email address.",
-                    },
-                  })}
+                  {...register("email")}
                   className="my-2 focus:border-primePink focus:outline-none focus:ring-0 border border-lightPink bg-softRose shadow p-3 rounded-xl placeholder:text-lightPink "
                 />
                 {formState.errors.email && (
@@ -173,25 +197,27 @@ export default function SignUp() {
                 <input
                   type="date"
                   id="dateOfBirth"
-                  placeholder="Select Your Date Of Birth"
-                  {...register("dateOfBirth", {
-                    required: {
-                      value: true,
-                      message: "Please Enter Your Date Of Birth",
-                    },
-                    valueAsDate: true,
-                    validate: function (value) {
-                      const now = new Date();
-                      const userAge = now.getFullYear() - value.getFullYear();
-                      console.log(userAge);
-                      if (userAge > 18) {
-                        return true;
-                      } else {
-                        return "You Must Be At Least 18 Years Old.";
-                      }
-                    },
-                  })}
-                  className="my-2 border border-lightPink bg-softRose shadow p-3 rounded-xl focus:border-primePink focus:outline-none focus:ring-0"
+                  {...register(
+                    "dateOfBirth",
+                    //   {
+                    //   required: {
+                    //     value: true,
+                    //     message: "Please Enter Your Date Of Birth",
+                    //   },
+                    //   valueAsDate: true,
+                    //   validate: function (value) {
+                    //     const now = new Date();
+                    //     const userAge = now.getFullYear() - value.getFullYear();
+                    //     console.log(userAge);
+                    //     if (userAge > 18) {
+                    //       return true;
+                    //     } else {
+                    //       return "You Must Be At Least 18 Years Old.";
+                    //     }
+                    //   },
+                    // }
+                  )}
+                  className="my-2  border border-lightPink bg-softRose shadow p-3 rounded-xl focus:border-primePink focus:outline-none focus:ring-0"
                 />
                 {formState.errors.dateOfBirth && (
                   <p className="text-burgundy bg-lightPink border-deep border p-2 rounded-2xl font-medium">
@@ -208,9 +234,12 @@ export default function SignUp() {
                   <input
                     type="radio"
                     value="male"
-                    {...register("gender", {
-                      required: { value: true, message: "Choose Your Gender" },
-                    })}
+                    {...register(
+                      "gender",
+                      //   {
+                      //   required: { value: true, message: "Choose Your Gender" },
+                      // }
+                    )}
                     id="male"
                     className="my-2 size-4 shrink-0 appearance-none rounded-full
            border-2 border-lightPink bg-softRose 
@@ -221,9 +250,12 @@ export default function SignUp() {
                   <input
                     type="radio"
                     value="female"
-                    {...register("gender", {
-                      required: { value: true, message: "Choose Your Gender" },
-                    })}
+                    {...register(
+                      "gender",
+                      //   {
+                      //   required: { value: true, message: "Choose Your Gender" },
+                      // }
+                    )}
                     id="female"
                     className="my-2 size-4 shrink-0 appearance-none rounded-full
            border-2 border-lightPink bg-softRose 
@@ -242,15 +274,7 @@ export default function SignUp() {
                 <input
                   type="password"
                   placeholder="Create a password"
-                  {...register("password", {
-                    required: { value: true, message: "Password Is Required" },
-                    pattern: {
-                      value:
-                        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-                      message:
-                        "Minimum eight characters, at least one upper case English letter, one lower case English letter, one number and one special character",
-                    },
-                  })}
+                  {...register("password")}
                   id="password"
                   className="my-2 border border-lightPink bg-softRose shadow p-3 rounded-xl placeholder:text-lightPink focus:border-primePink focus:outline-none focus:ring-0"
                 />
@@ -266,25 +290,7 @@ export default function SignUp() {
                   type="password"
                   id="repassword"
                   placeholder="Re-enter your password"
-                  {...register("rePassword", {
-                    required: {
-                      value: true,
-                      message: "rePassword Is Required",
-                    },
-                    pattern: {
-                      value:
-                        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-                      message:
-                        "Minimum eight characters, at least one upper case English letter, one lower case English letter, one number and one special character",
-                    },
-                    validate: function (value) {
-                      if (value == watch("password")) {
-                        return true;
-                      } else {
-                        return "Password and RePassword do not match.";
-                      }
-                    },
-                  })}
+                  {...register("rePassword")}
                   className="my-2 border border-lightPink bg-softRose shadow p-3 rounded-xl placeholder:text-lightPink focus:border-primePink focus:outline-none focus:ring-0"
                 />
                 {formState.errors.rePassword && (
@@ -293,8 +299,22 @@ export default function SignUp() {
                   </p>
                 )}
               </div>
-              <button className="w-full rounded-xl my-5 py-3 cursor-pointer text-base font-extrabold text-white transition disabled:opacity-60 bg-burgundy hover:bg-deep">
-                Sign Up
+              <button
+                disabled={loading}
+                className="w-full rounded-xl my-5 py-3 cursor-pointer text-base font-extrabold text-softRose transition disabled:opacity-60 bg-burgundy hover:bg-deep flex items-center justify-center">
+                {loading ? (
+                  <Hearts
+                    height="25"
+                    width="100"
+                    color="#fff7fe"
+                    ariaLabel="hearts-loading"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                    visible={true}
+                  />
+                ) : (
+                  "SignUp"
+                )}
               </button>
             </form>
           </div>
