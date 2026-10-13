@@ -7,6 +7,7 @@ import { schema } from "../../schemas/signup.schema";
 import type { signUpDataType } from "./signup.types";
 import { useState } from "react";
 import { Hearts } from "react-loader-spinner";
+import { useNavigate } from "react-router-dom";
 
 export default function SignUp() {
   const { handleSubmit, register, formState } = useForm({
@@ -26,7 +27,7 @@ export default function SignUp() {
 
   const [loading, setLoading] = useState(false);
 
-  console.log(loading, setLoading);
+  let nav = useNavigate();
 
   async function myHandleSubmit(values: signUpDataType) {
     if (loading == true) {
@@ -38,8 +39,10 @@ export default function SignUp() {
         "https://route-posts.routemisr.com/users/signup",
         values,
       );
-      console.log(data);
       toast.success(data.message);
+      setTimeout(function () {
+        nav("/login");
+      }, 2000);
     } catch (error) {
       if (isAxiosError(error)) {
         toast.danger(error.response?.data.message);
@@ -47,8 +50,6 @@ export default function SignUp() {
     } finally {
       setLoading(false);
     }
-
-    console.log(values);
   }
 
   return (

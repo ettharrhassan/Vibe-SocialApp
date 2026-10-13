@@ -3,12 +3,16 @@ import "../../schemas/signup.schema";
 import { toast } from "@heroui/react";
 import axios, { isAxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Hearts } from "react-loader-spinner";
 import type { loginDataType } from "./login.types";
 import { loginSchema } from "../../schemas/login.schema";
+import { useNavigate } from "react-router-dom";
+import { AuthCreatedContext } from "../../context/AuthContext";
 
 export default function Login() {
+    const {addDataToToken} = useContext(AuthCreatedContext)
+
   const { handleSubmit, register, formState } = useForm({
     defaultValues: {
       email: "",
@@ -21,7 +25,7 @@ export default function Login() {
 
   const [loading, setLoading] = useState(false);
 
-  console.log(loading, setLoading);
+  let nav = useNavigate();
 
   async function myHandleSubmit(values: loginDataType) {
     if (loading == true) {
@@ -35,6 +39,8 @@ export default function Login() {
       );
       console.log(data);
       toast.success(data.message);
+      addDataToToken(data.data.token)
+      nav("/home")
     } catch (error) {
       if (isAxiosError(error)) {
         toast.danger(error.response?.data.message);
