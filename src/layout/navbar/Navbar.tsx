@@ -1,13 +1,5 @@
 import { useContext, useState } from "react";
-import {
-  FaHome,
-  FaUsers,
-  FaCompass,
-  FaSearch,
-  FaBell,
-  FaBars,
-  FaTimes,
-} from "react-icons/fa";
+import { FaHome, FaSearch, FaBell, FaBars, FaTimes } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { IoChatbubbleEllipses } from "react-icons/io5";
 import { MdKeyboardArrowDown } from "react-icons/md";
@@ -15,7 +7,7 @@ import { Link, NavLink } from "react-router-dom";
 import { AuthCreatedContext } from "../../context/AuthContext";
 
 const navLinks = [
-  { name: "Home", icon: FaHome, path: "/" },
+  { name: "Home", icon: FaHome, path: "/home" },
   { name: "profile", icon: CgProfile, path: "/profile" },
 ];
 
@@ -25,7 +17,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-softRose  bg-linear-to-r from-burgundy via-primePink to-lightPink ">
+    <nav className="sticky top-0 z-50   bg-linear-to-r from-burgundy via-primePink to-lightPink ">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         {/* Logo */}
         <Link to="/" className="flex shrink-0 items-center gap-2">
@@ -54,9 +46,16 @@ export default function Navbar() {
         <div className="hidden items-center gap-2 lg:flex">
           {navLinks.map(({ name, icon: Icon, path }) => (
             <NavLink
-              to={path}
               key={name}
-              className={`text-softRose flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-[17px] font-medium transition hover:text-burgundy duration-300 hover:bg-softRose`}>
+              to={path}
+              onClick={() => setMenuOpen(false)}
+              className={({ isActive }) =>
+                `flex w-full items-center gap-3 rounded-xl px-4 py-3 text-[17px] font-semibold ${
+                  isActive
+                    ? "bg-softRose text-burgundy"
+                    : "text-softRose cursor-pointer rounded-xl px-4 py-2.5 text-[17px] font-medium transition-all hover:text-burgundy duration-300 hover:bg-softRose"
+                }`
+              }>
               <Icon size={20} />
               {name}
             </NavLink>
@@ -64,14 +63,26 @@ export default function Navbar() {
         </div>
 
         {token ? (
-          <button onClick={removeToken} className="text-softRose cursor-pointer rounded-xl px-4 py-2.5 text-[17px] font-medium transition-all hover:text-burgundy duration-300 hover:bg-softRose">
+          <button
+            onClick={removeToken}
+            className="text-softRose cursor-pointer rounded-xl px-4 py-2.5 text-[17px] font-medium transition-all hover:text-burgundy duration-300 hover:bg-softRose">
             {" "}
             LogOut{" "}
           </button>
         ) : (
           <>
-            <Link to={"/login"} className="text-softRose cursor-pointer rounded-xl px-4 py-2.5 text-[17px] font-medium transition-all hover:text-burgundy duration-300 hover:bg-softRose"> LogIn </Link>
-            <Link to={"/signup"} className="text-softRose cursor-pointer rounded-xl px-4 py-2.5 text-[17px] font-medium transition-all hover:text-burgundy duration-300 hover:bg-softRose"> SignUp </Link>
+            <Link
+              to={"/login"}
+              className="text-softRose cursor-pointer rounded-xl px-4 py-2.5 text-[17px] font-medium transition-all hover:text-burgundy duration-300 hover:bg-softRose">
+              {" "}
+              LogIn{" "}
+            </Link>
+            <Link
+              to={"/signup"}
+              className="text-softRose cursor-pointer rounded-xl px-4 py-2.5 text-[17px] font-medium transition-all hover:text-burgundy duration-300 hover:bg-softRose">
+              {" "}
+              SignUp{" "}
+            </Link>
           </>
         )}
 
@@ -126,23 +137,6 @@ export default function Navbar() {
             />
           </div>
 
-          {/* {navLinks.map(({ name, icon: Icon }) => (
-            <button
-              key={name}
-              onClick={() => {
-                setActive(name);
-                setMenuOpen(false);
-              }}
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium ${
-                active === name
-                  ? "bg-indigo-50 text-indigo-600"
-                  : "text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              <Icon size={20} />
-              {name}
-            </button>
-          ))} */}
         </div>
       )}
     </nav>

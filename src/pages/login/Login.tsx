@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthCreatedContext } from "../../context/AuthContext";
 
 export default function Login() {
-    const {addDataToToken} = useContext(AuthCreatedContext)
+  const { addDataToToken } = useContext(AuthCreatedContext);
 
   const { handleSubmit, register, formState } = useForm({
     defaultValues: {
@@ -36,11 +36,13 @@ export default function Login() {
       let { data } = await axios.post(
         "https://route-posts.routemisr.com/users/signin",
         values,
+        
       );
-      console.log(data);
+      
+  
       toast.success(data.message);
-      addDataToToken(data.data.token)
-      nav("/home")
+      addDataToToken(data.data.token, data.data.user);
+      nav("/home");
     } catch (error) {
       if (isAxiosError(error)) {
         toast.danger(error.response?.data.message);
@@ -48,8 +50,6 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
-
-    console.log(values);
   }
 
   return (
