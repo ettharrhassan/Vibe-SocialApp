@@ -42,7 +42,7 @@ export default function PostCard({ post, allComment }: PostCardPropsType) {
     <>
       <div
         key={post._id}
-        className="mx-auto my-4 w-full min-w-0 max-w-full rounded-2xl border border-lightPink bg-white/80 p-3 sm:p-4 md:w-3/4 lg:w-1/2">
+       className="mx-auto my-4 w-full min-w-0 max-w-full rounded-2xl border border-lightPink bg-white/80 p-3 sm:p-4">
         <div className="flex min-w-0 items-center gap-2">
           <img
             src={post.user.photo}

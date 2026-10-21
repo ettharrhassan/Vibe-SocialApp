@@ -32,18 +32,15 @@ export default function Home() {
   }
   return (
     <>
-    <div className="min-h-screen bg-softRose p-4">
-    <CreatePost/>
-      <div className="bg-softRose mt-0 p-4 ">
-        {data?.data.data.posts.map(function (post: PostType) {
-          return (
-            <>
-              <PostCard post={post} key={post._id} />
-            </>
-          );
-        })}
-      </div>
-      </div>
+<div className="min-h-screen bg-softRose p-4">
+  <div className="mx-auto w-full max-w-2xl space-y-6">
+    <CreatePost />
+
+    {data?.data.data.posts.map((post: PostType) => (
+      <PostCard post={post} key={post._id} />
+    ))}
+  </div>
+</div>
     </>
   );
 }
