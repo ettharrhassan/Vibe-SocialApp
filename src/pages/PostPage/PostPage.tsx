@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import Loader from "../../components/Loader/Loader";
 import { useContext } from "react";
 import { AuthCreatedContext } from "../../context/AuthContext";
@@ -8,8 +8,6 @@ import PostCard from "../../components/post/PostCard";
 
 export default function PostPage() {
   const { id } = useParams();
-
- const nav= useNavigate()
 
   const { token } = useContext(AuthCreatedContext);
 
@@ -35,7 +33,7 @@ export default function PostPage() {
     });
   }
 
-  const {data:commentData} = useQuery({
+  const { data: commentData } = useQuery({
     queryKey: ["comments", id],
     queryFn: getPostComments,
   });
@@ -44,11 +42,14 @@ export default function PostPage() {
   }
 
   if (isError) {
-    return nav("/home")
+    return <Navigate to="/home" replace />;
   }
   return (
     <>
-      <PostCard allComment={commentData?.data.data.comments} post={data?.data.data.post} />
+      <PostCard
+        allComment={commentData?.data.data.comments}
+        post={data?.data.data.post}
+      />
     </>
   );
 }
