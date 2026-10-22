@@ -5,7 +5,7 @@ import { FaImage } from "react-icons/fa";
 import { FaTrashCan } from "react-icons/fa6";
 import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Hearts } from "react-loader-spinner";
+
 
 export default function CreatePost() {
   const { user, token } = useContext(AuthCreatedContext);
@@ -31,7 +31,7 @@ export default function CreatePost() {
   }
 
   const queryClient = useQueryClient();
-  const { data, isPending, isError, mutate } = useMutation({
+  const {isPending, mutate } = useMutation({
     mutationFn: getDataToPost,
     onSuccess: function () {
       console.log("Success");

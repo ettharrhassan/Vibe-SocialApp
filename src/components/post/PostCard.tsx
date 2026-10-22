@@ -30,7 +30,7 @@ export default function PostCard({ post, allComment }: PostCardPropsType) {
     );
   }
 
-  const { isError, isPending, error, mutate } = useMutation({
+  const { isPending, mutate } = useMutation({
     mutationFn: sendComment,
     onSuccess: function () {
       setCommentInput("");
@@ -93,7 +93,7 @@ export default function PostCard({ post, allComment }: PostCardPropsType) {
           <button className="btnPost">
             <AiFillLike /> <span>Like</span>
           </button>
-          <button className="btnPost" disabled={isPending} onClick={mutate}>
+          <button className="btnPost" disabled={isPending} onClick={()=>mutate}>
             {isPending ? (
               <Hearts
                 height="25"
