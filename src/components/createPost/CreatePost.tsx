@@ -4,35 +4,64 @@ import { useContext, useRef, useState } from "react";
 import { FaImage } from "react-icons/fa";
 import { FaTrashCan } from "react-icons/fa6";
 import axios from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function CreatePost() {
   const { user, token } = useContext(AuthCreatedContext);
+
   let imageFile = useRef<HTMLInputElement>(null);
+
   let postBody = useRef<HTMLTextAreaElement>(null);
+
   function getDataToPost() {
     const postData = new FormData();
     if (postBody.current?.value) {
       postData.append("body", postBody.current.value);
     }
     if (imageFile.current?.files?.[0]) {
-      postData.append("body", imageFile.current?.files?.[0]);
+      postData.append("image", imageFile.current?.files?.[0]);
     }
 
-   return axios.post("https://route-posts.routemisr.com/posts", postData, {
+    return axios.post("https://route-posts.routemisr.com/posts", postData, {
       headers: {
         token: token,
       },
     });
   }
-  const [imageSrc, setImageSrc] = useState(null);
+
+  const queryClient = useQueryClient();
+  const { data, isPending, isError, mutate } = useMutation({
+    mutationFn: getDataToPost,
+    onSuccess: function () {
+      console.log("Success");
+      queryClient.invalidateQueries({ queryKey: ["allPosts"] });
+      clearImage();
+    },
+    onError: (error) => {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Upload error:",
+          error.response?.status,
+          error.response?.data,
+        );
+      } else {
+        console.error(error);
+      }
+    },
+  });
+
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
   function imagePreview() {
     if (imageFile.current?.files?.[0]) {
       setImageSrc(URL.createObjectURL(imageFile.current?.files?.[0]));
     }
   }
   function clearImage() {
-    setImageSrc("");
-    imageFile.current.value = "";
+    setImageSrc(null);
+
+    if (imageFile.current) {
+      imageFile.current.value = "";
+    }
   }
   return (
     <Modal>
@@ -109,6 +138,7 @@ export default function CreatePost() {
 
             <Modal.Footer className="mt-8 border-t-0 p-0">
               <Button
+                onClick={() => mutate()}
                 slot="close"
                 className="w-full text-xl rounded-full bg-linear-to-r from-primePink via-lightPink  to-primePink py-5 font-semibold text-white transition-all duration-300  hover:from-primePink hover:via-primePink hover:to-primePink  hover:-translate-y-1.5">
                 Post
