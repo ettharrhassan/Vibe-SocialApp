@@ -5,6 +5,7 @@ import { FaImage } from "react-icons/fa";
 import { FaTrashCan } from "react-icons/fa6";
 import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Hearts } from "react-loader-spinner";
 
 export default function CreatePost() {
   const { user, token } = useContext(AuthCreatedContext);
@@ -78,19 +79,21 @@ export default function CreatePost() {
           )}
         </span>
 
-        <span className="flex-1 rounded-2xl bg-gray-100 px-4 py-3 text-base text-gray-500">
-          What’s on your mind, {user?.name?.split(" ")[0] || user?.username}?
+        <span className="flex-1 rounded-2xl bg-gray-100 px-4 py-3 text-base text-gray-500 border border-transparent hover:border-lightPink transition-all duration-300">
+          {isPending
+            ? "Loading .. "
+            : `What’s on your mind, ${user?.name?.split(" ")[0] || user?.username}?`}
         </span>
 
-        <div className="flex size-10 shrink-0 items-center justify-center">
-          <FaImage className="size-6 text-burgundy" />
+        <div className=" group flex size-10 shrink-0 items-center justify-center">
+     <FaImage className="size-6 text-burgundy transition-transform duration-300 group-hover:text-primePink group-hover:scale-125" />
         </div>
       </Button>
 
       <Modal.Backdrop className="bg-black/50">
         <Modal.Container>
           <Modal.Dialog className="relative w-[calc(100vw-2rem)] sm:w-3/4 lg:w-[40%]  max-w-3xl rounded-3xl bg-white px-6 pb-6 pt-8 text-black shadow-xl">
-            <Modal.CloseTrigger className="absolute right-5 top-5 bg-primePink hover:bg-softRose hover:text-burgundy text-softRose font-semibold transition-all duration-300" />
+            <Modal.CloseTrigger className="absolute right-5 top-5 bg-primePink hover:bg-softRose hover:border-lightPink border border-transparent hover:text-burgundy text-softRose font-semibold transition-all duration-300" />
 
             <Modal.Header className="mb-4 flex flex-col items-start gap-4 p-0">
               <Modal.Heading className="text-2xl font-semibold">
@@ -118,7 +121,7 @@ export default function CreatePost() {
 
                 <label
                   htmlFor="imageUpload"
-                  className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-full bg-linear-to-r from-primePink via-lightPink to-primePink p-3 font-medium text-lg text-white">
+                  className="flex w-full cursor-pointer items-center justify-center gap-3 hover:from-primePink hover:via-primePink hover:to-primePink  rounded-full bg-linear-to-r from-primePink via-lightPink to-primePink p-3 font-semibold text-lg text-white hover:-translate-y-1.5 transition-all duration-300 ">
                   <FaImage />
                   <span>Add Image To Your Post</span>
                 </label>
@@ -136,7 +139,7 @@ export default function CreatePost() {
               </div>
             </Modal.Body>
 
-            <Modal.Footer className="mt-8 border-t-0 p-0">
+           <Modal.Footer className="mt-8 border-t-0! border-0! p-0">
               <Button
                 onClick={() => mutate()}
                 slot="close"
