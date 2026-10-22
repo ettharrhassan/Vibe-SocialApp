@@ -21,7 +21,7 @@ export default function PostPage() {
     });
   }
 
-  const { data, isLoading, isError,refetch } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["post", id],
     queryFn: getPost,
     gcTime: 1000 * 60,
@@ -35,7 +35,7 @@ export default function PostPage() {
     });
   }
 
-  const {data:commentData,isLoading:commentLoading} = useQuery({
+  const {data:commentData} = useQuery({
     queryKey: ["comments", id],
     queryFn: getPostComments,
   });
