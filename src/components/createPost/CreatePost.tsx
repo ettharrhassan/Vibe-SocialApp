@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 
 export default function CreatePost() {
-  const { user, token } = useContext(AuthCreatedContext);
+  const { user, token  } = useContext(AuthCreatedContext);
 
   let imageFile = useRef<HTMLInputElement>(null);
 
@@ -79,7 +79,7 @@ export default function CreatePost() {
           )}
         </span>
 
-        <span className="flex-1 rounded-2xl bg-gray-100 px-4 py-3 text-base text-gray-500 border border-transparent hover:border-lightPink transition-all duration-300">
+        <span className="flex-1 rounded-2xl bg-softRose px-4 py-3 text-base text-burgundy border border-transparent hover:border-lightPink transition-all duration-300">
           {isPending
             ? "Loading .. "
             : `What’s on your mind, ${user?.name?.split(" ")[0] || user?.username}?`}

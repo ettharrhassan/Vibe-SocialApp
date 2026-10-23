@@ -32,3 +32,7 @@ input[type="date"]::-webkit-datetime-edit-year-field {
 .btnPost{
   @apply flex items-center justify-center gap-2 rounded-xl border border-lightPink px-3 py-2 text-sm sm:px-4 sm:text-base cursor-pointer transition-all duration-300 hover:border-burgundy hover:bg-burgundy hover:text-softRose
 }
+
+.dropDownStyle{
+  @apply flex bg-softRose transition-all duration-300 justify-between py-3 px-4 border border-transparent  mb-2 text-burgundy hover:bg-white! hover:border-lightPink
+}

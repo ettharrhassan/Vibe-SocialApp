@@ -14,6 +14,7 @@ export interface AuthContextType {
   user: AuthUserType | null;
   addDataToToken: (tkn: string, user: AuthUserType) => void;
   removeToken: () => void;
+  userId: string | null;
 }
 
 export interface AuthContextPropsType {
