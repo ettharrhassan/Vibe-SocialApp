@@ -3,8 +3,9 @@ import { FaHome, FaSearch, FaBell, FaBars, FaTimes } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { IoChatbubbleEllipses } from "react-icons/io5";
 import { MdKeyboardArrowDown } from "react-icons/md";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { AuthCreatedContext } from "../../context/AuthContext";
+import { Button, Dropdown, Label } from "@heroui/react";
 
 const navLinks = [
   { name: "Home", icon: FaHome, path: "/home" },
@@ -12,9 +13,16 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const { token, removeToken } = useContext(AuthCreatedContext);
+  const { token, removeToken, user } = useContext(AuthCreatedContext);
 
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const navigate = useNavigate();
+
+  function handleSignOut() {
+    removeToken();
+    navigate("/login", { replace: true });
+  }
 
   return (
     <nav className="sticky top-0 z-50   bg-linear-to-r from-burgundy via-primePink to-lightPink ">
@@ -105,14 +113,29 @@ export default function Navbar() {
           </button>
 
           {/* Profile */}
-          <button className="hidden items-center gap-2 rounded-xl p-1.5 hover:bg-softRose sm:flex transition-all duration-300">
-            <img
-              src="https://i.pravatar.cc/100?img=12"
-              alt="Your profile"
-              className="h-9 w-9 rounded-full object-cover"
-            />
-            <MdKeyboardArrowDown className="text-burgundy" size={20} />
-          </button>
+          <Dropdown>
+            <Dropdown.Trigger>
+              <Button className="hidden h-12 items-center gap-2 rounded-2xl bg-white px-3 sm:flex">
+                <img
+                  src={user?.photo || "https://i.pravatar.cc/100?img=12"}
+                  alt={user?.name ?? "Profile"}
+                  className="size-11 rounded-full object-cover"
+                />
+                <MdKeyboardArrowDown className="text-burgundy" size={20} />
+              </Button>
+            </Dropdown.Trigger>
+
+            <Dropdown.Popover placement="bottom end">
+              <Dropdown.Menu
+                onAction={(key) => {
+                  if (key === "sign-out") handleSignOut();
+                }}>
+                <Dropdown.Item id="sign-out" textValue="Sign Out">
+                  <Label>Sign Out</Label>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown.Popover>
+          </Dropdown>
 
           {/* Mobile menu */}
           <button
@@ -136,7 +159,6 @@ export default function Navbar() {
               className="w-full bg-transparent text-sm outline-none"
             />
           </div>
-
         </div>
       )}
     </nav>

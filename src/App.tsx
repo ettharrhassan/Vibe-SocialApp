@@ -10,6 +10,8 @@ import Profile from "./pages/profile/Profile";
 import ProtectedRoute from "./components/guard/Guard";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import PostPage from "./pages/PostPage/PostPage";
+import SavedPost from "./components/Saved/SavedPost";
+import LikedPosts from "./components/Liked/LikedPosts";
 
 let client = new QueryClient();
 
@@ -20,6 +22,8 @@ const Router = createBrowserRouter([
     children: [
       { path: "/", element:<ProtectedRoute> <Home /></ProtectedRoute> },
       { path: "/home", element:<ProtectedRoute> <Home /></ProtectedRoute> },
+      { path: "/saved", element: <ProtectedRoute><SavedPost /></ProtectedRoute> },
+      { path: "/liked", element: <ProtectedRoute><LikedPosts /></ProtectedRoute> },
       { path: "/profile", element: <ProtectedRoute> <Profile /></ProtectedRoute> },
       { path: "/post/:id", element: <ProtectedRoute> <PostPage /></ProtectedRoute> },
       { path: "/login", element: <Login /> },
