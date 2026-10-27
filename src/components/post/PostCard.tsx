@@ -12,34 +12,53 @@ import { AuthCreatedContext } from "../../context/AuthContext";
 import Comment from "../comment/Comment";
 import DropDown from "../DropDown/DropDown";
 
-export default function PostCard({ post, allComment }: PostCardPropsType) {
+export default function PostCard({
+  post,
+  allComment,
+}: PostCardPropsType) {
   const [commentInput, setCommentInput] = useState("");
   const [isPostExpanded, setIsPostExpanded] = useState(false);
+  const [isSaved, setIsSaved] = useState(post.bookmarked);
+  const [isLiked, setIsLiked] = useState(false);
+
   const queryClient = useQueryClient();
   const { userId, token } = useContext(AuthCreatedContext);
-  const [isSaved, setIsSaved] = useState(post.bookmarked);
+
+  // Set the initial like state from the current user's ID.
+  const likedByCurrentUser = Boolean(
+    userId && post.likes?.includes(userId),
+  );
 
   function sendComment() {
     return axios.post(
       `https://route-posts.routemisr.com/posts/${post._id}/comments`,
       { content: commentInput },
       {
-        headers: {
-          token,
-        },
+        headers: { token },
       },
     );
   }
 
   function deletePost() {
-    return axios.delete(`https://route-posts.routemisr.com/posts/${post._id}`, {
-      headers: { token },
-    });
+    return axios.delete(
+      `https://route-posts.routemisr.com/posts/${post._id}`,
+      {
+        headers: { token },
+      },
+    );
   }
 
   function toggleSave() {
     return axios.put(
       `https://route-posts.routemisr.com/posts/${post._id}/bookmark`,
+      {},
+      { headers: { token } },
+    );
+  }
+
+  function toggleLike() {
+    return axios.put(
+      `https://route-posts.routemisr.com/posts/${post._id}/like`,
       {},
       { headers: { token } },
     );
@@ -54,11 +73,10 @@ export default function PostCard({ post, allComment }: PostCardPropsType) {
     },
   });
 
-  const { isPending: isDeleting, mutate: mutateDeletePost } = useMutation<
-    AxiosResponse,
-    Error,
-    void
-  >({
+  const {
+    isPending: isDeleting,
+    mutate: mutateDeletePost,
+  } = useMutation<AxiosResponse, Error, void>({
     mutationFn: deletePost,
     onSuccess: () => {
       toast.success("Post Deleted");
@@ -69,27 +87,24 @@ export default function PostCard({ post, allComment }: PostCardPropsType) {
     },
   });
 
-  const { isPending: isSendingComment, mutate: mutateComment } = useMutation({
+  const {
+    isPending: isSendingComment,
+    mutate: mutateComment,
+  } = useMutation({
     mutationFn: sendComment,
     onSuccess: () => {
       setCommentInput("");
-      queryClient.invalidateQueries({ queryKey: ["comments", post._id] });
+      queryClient.invalidateQueries({
+        queryKey: ["comments", post._id],
+      });
+      queryClient.invalidateQueries({ queryKey: ["allPosts"] });
     },
   });
 
-  const [isLiked, setIsLiked] = useState(
-    Boolean(userId && post.likes?.includes(userId)),
-  );
-
-  function toggleLike() {
-    return axios.put(
-      `https://route-posts.routemisr.com/posts/${post._id}/like`,
-      {},
-      { headers: { token } },
-    );
-  }
-
-  const { isPending: isLiking, mutate: mutateToggleLike } = useMutation({
+  const {
+    isPending: isLiking,
+    mutate: mutateToggleLike,
+  } = useMutation({
     mutationFn: toggleLike,
     onSuccess: () => {
       setIsLiked((previous) => !previous);
@@ -98,15 +113,17 @@ export default function PostCard({ post, allComment }: PostCardPropsType) {
     },
   });
 
+  const isPostLiked = isLiked || likedByCurrentUser;
   const likesCount = post.likesCount ?? post.likes?.length ?? 0;
   const commentsCount = post.commentsCount ?? 0;
   const sharesCount = post.sharesCount ?? 0;
 
   return (
     <div
-      className={`mx-auto my-4 w-full min-w-0 max-w-full rounded-2xl border border-lightPink bg-white/80 p-3 transition-opacity sm:p-4 ${
+      className={`mx-auto my-4 w-full min-w-0 max-w-2xl rounded-2xl border border-lightPink bg-white/80 p-3 transition-opacity sm:p-4 ${
         isDeleting ? "opacity-35" : "opacity-100"
-      }`}>
+      }`}
+    >
       <div className="flex justify-between">
         <div className="flex min-w-0 items-center gap-2">
           <img
@@ -116,10 +133,14 @@ export default function PostCard({ post, allComment }: PostCardPropsType) {
           />
 
           <div className="min-w-0">
-            <p className="wrap-break-word font-medium">{post.user.name}</p>
+            <p className="wrap-break-word font-medium">
+              {post.user.name}
+            </p>
+
             <Link
               to={`/post/${post._id}`}
-              className="text-xs text-gray-500 sm:text-sm">
+              className="text-xs text-gray-500 sm:text-sm"
+            >
               {new Date(post.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
@@ -155,8 +176,9 @@ export default function PostCard({ post, allComment }: PostCardPropsType) {
           {(post.body?.length ?? 0) > 180 && (
             <button
               type="button"
-              onClick={() => setIsPostExpanded(!isPostExpanded)}
-              className="mt-1 font-semibold text-burgundy">
+              onClick={() => setIsPostExpanded((expanded) => !expanded)}
+              className="mt-1 font-semibold text-burgundy"
+            >
               {isPostExpanded ? "See less" : "See more"}
             </button>
           )}
@@ -170,93 +192,97 @@ export default function PostCard({ post, allComment }: PostCardPropsType) {
           />
         )}
       </div>
-<div className="my-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-  <div className="flex flex-wrap gap-2 sm:gap-4">
-    <button
-      type="button"
-      disabled={isLiking}
-      onClick={() => mutateToggleLike()}
-      className={`btnPost disabled:opacity-60 ${
-        isLiked ? "bg-burgundy! text-softRose! border-0!" : ""
-      }`}
-    >
-      {isLiking ? (
-        <Hearts
-          height="25"
-          width="100"
-          color="#fff7fe"
-          ariaLabel="hearts-loading"
-          visible
-        />
-      ) : (
-        <>
-          <AiFillLike />
-          <span>{isLiked ? "Liked" : "Like"}</span>
-          {likesCount > 0 && (
-            <span className="sm:hidden">{likesCount}</span>
-          )}
-        </>
-      )}
-    </button>
 
-    <button
-      className="btnPost"
-      disabled={isSendingComment}
-      onClick={() => mutateComment()}
-    >
-      {isSendingComment ? (
-        <Hearts
-          height="25"
-          width="100"
-          color="#fff7fe"
-          ariaLabel="hearts-loading"
-          visible
-        />
-      ) : (
-        <>
-          <FaRegComment />
-          <span>Comment</span>
-          {commentsCount > 0 && (
-            <span className="sm:hidden">{commentsCount}</span>
-          )}
-        </>
-      )}
-    </button>
+      <div className="my-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap gap-2 sm:gap-4">
+          <button
+            type="button"
+            disabled={isLiking}
+            onClick={() => mutateToggleLike()}
+            className={`btnPost disabled:opacity-60 ${
+              isPostLiked ? "bg-burgundy! text-softRose! border-0!" : ""
+            }`}
+          >
+            {isLiking ? (
+              <Hearts
+                height="25"
+                width="100"
+                color="#fff7fe"
+                ariaLabel="hearts-loading"
+                visible
+              />
+            ) : (
+              <>
+                <AiFillLike />
+                <span>{isPostLiked ? "Liked" : "Like"}</span>
+                {likesCount > 0 && (
+                  <span className="sm:hidden">{likesCount}</span>
+                )}
+              </>
+            )}
+          </button>
 
-    <button className="btnPost">
-      <CiShare2 />
-      <span>Share</span>
-      {sharesCount > 0 && (
-        <span className="sm:hidden">{sharesCount}</span>
-      )}
-    </button>
-  </div>
+          <button
+            type="button"
+            className="btnPost"
+            disabled={isSendingComment}
+            onClick={() => mutateComment()}
+          >
+            {isSendingComment ? (
+              <Hearts
+                height="25"
+                width="100"
+                color="#fff7fe"
+                ariaLabel="hearts-loading"
+                visible
+              />
+            ) : (
+              <>
+                <FaRegComment />
+                <span>Comment</span>
+                {commentsCount > 0 && (
+                  <span className="sm:hidden">{commentsCount}</span>
+                )}
+              </>
+            )}
+          </button>
 
-  {(likesCount > 0 || commentsCount > 0 || sharesCount > 0) && (
-    <div className="hidden w-fit flex-wrap items-center gap-2 sm:flex">
-      {likesCount > 0 && (
-        <div className="flex w-fit shrink-0 items-center gap-2 rounded-xl border border-lightPink px-3 py-2 text-sm text-burgundy">
-          <AiFillLike />
-          <span>{likesCount}</span>
+          <button type="button" className="btnPost">
+            <CiShare2 />
+            <span>Share</span>
+            {sharesCount > 0 && (
+              <span className="sm:hidden">{sharesCount}</span>
+            )}
+          </button>
         </div>
-      )}
 
-      {commentsCount > 0 && (
-        <div className="flex w-fit shrink-0 items-center gap-2 rounded-xl border border-lightPink px-3 py-2 text-sm text-burgundy">
-          <FaRegComment />
-          <span>{commentsCount}</span>
-        </div>
-      )}
+        {(likesCount > 0 ||
+          commentsCount > 0 ||
+          sharesCount > 0) && (
+          <div className="hidden w-fit flex-wrap items-center gap-2 sm:flex">
+            {likesCount > 0 && (
+              <div className="flex w-fit shrink-0 items-center gap-2 rounded-xl border border-lightPink px-3 py-2 text-sm text-burgundy">
+                <AiFillLike />
+                <span>{likesCount}</span>
+              </div>
+            )}
 
-      {sharesCount > 0 && (
-        <div className="flex w-fit shrink-0 items-center gap-2 rounded-xl border border-lightPink px-3 py-2 text-sm text-burgundy">
-          <CiShare2 />
-          <span>{sharesCount}</span>
-        </div>
-      )}
-    </div>
-  )}
-</div>
+            {commentsCount > 0 && (
+              <div className="flex w-fit shrink-0 items-center gap-2 rounded-xl border border-lightPink px-3 py-2 text-sm text-burgundy">
+                <FaRegComment />
+                <span>{commentsCount}</span>
+              </div>
+            )}
+
+            {sharesCount > 0 && (
+              <div className="flex w-fit shrink-0 items-center gap-2 rounded-xl border border-lightPink px-3 py-2 text-sm text-burgundy">
+                <CiShare2 />
+                <span>{sharesCount}</span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {allComment?.length
         ? [...allComment]
@@ -272,12 +298,14 @@ export default function PostCard({ post, allComment }: PostCardPropsType) {
                 isTopComment={comment._id === post.topComment?._id}
               />
             ))
-        : post.topComment && <Comment comment={post.topComment} isTopComment />}
+        : post.topComment && (
+            <Comment comment={post.topComment} isTopComment />
+          )}
 
       <input
         value={commentInput}
         type="text"
-        onChange={(e) => setCommentInput(e.target.value)}
+        onChange={(event) => setCommentInput(event.target.value)}
         placeholder="Enter Your Comment"
         className="w-full rounded-2xl border border-lightPink p-3 outline-none focus:border-2"
       />

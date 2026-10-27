@@ -36,3 +36,6 @@ input[type="date"]::-webkit-datetime-edit-year-field {
 .dropDownStyle{
   @apply flex bg-softRose transition-all duration-300 justify-between py-3 px-4 border border-transparent  mb-2 text-burgundy hover:bg-white! hover:border-lightPink
 }
+.dropDownNavbarProfile{
+  @apply  transition-all duration-300 border border-transparent rounded-2xl hover:bg-softRose hover:border-lightPink
+}

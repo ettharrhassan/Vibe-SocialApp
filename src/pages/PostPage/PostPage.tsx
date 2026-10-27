@@ -44,12 +44,14 @@ export default function PostPage() {
   if (isError) {
     return <Navigate to="/home" replace />;
   }
-  return (
-    <>
+return (
+  <div className="min-h-screen bg-softRose p-4">
+    <div className="mx-auto w-full max-w-2xl">
       <PostCard
         allComment={commentData?.data.data.comments}
         post={data?.data.data.post}
       />
-    </>
-  );
+    </div>
+  </div>
+);
 }
