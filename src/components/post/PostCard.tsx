@@ -7,15 +7,14 @@ import { Spinner, toast } from "@heroui/react";
 import { AiFillLike } from "react-icons/ai";
 import { CiShare2 } from "react-icons/ci";
 import { FaRegComment } from "react-icons/fa";
+import { BsFillSendFill } from "react-icons/bs";
+
 import type { PostCardPropsType } from "../../types/PostCardPropsType.types";
 import { AuthCreatedContext } from "../../context/AuthContext";
 import Comment from "../comment/Comment";
 import DropDown from "../DropDown/DropDown";
 
-export default function PostCard({
-  post,
-  allComment,
-}: PostCardPropsType) {
+export default function PostCard({ post, allComment }: PostCardPropsType) {
   const [commentInput, setCommentInput] = useState("");
   const [isPostExpanded, setIsPostExpanded] = useState(false);
   const [isSaved, setIsSaved] = useState(post.bookmarked);
@@ -25,14 +24,12 @@ export default function PostCard({
   const { userId, token } = useContext(AuthCreatedContext);
 
   // Set the initial like state from the current user's ID.
-  const likedByCurrentUser = Boolean(
-    userId && post.likes?.includes(userId),
-  );
+  const likedByCurrentUser = Boolean(userId && post.likes?.includes(userId));
 
   function sendComment() {
     return axios.post(
       `https://route-posts.routemisr.com/posts/${post._id}/comments`,
-      { content: commentInput },
+      { content: commentInput.trim() },
       {
         headers: { token },
       },
@@ -40,12 +37,9 @@ export default function PostCard({
   }
 
   function deletePost() {
-    return axios.delete(
-      `https://route-posts.routemisr.com/posts/${post._id}`,
-      {
-        headers: { token },
-      },
-    );
+    return axios.delete(`https://route-posts.routemisr.com/posts/${post._id}`, {
+      headers: { token },
+    });
   }
 
   function toggleSave() {
@@ -73,10 +67,11 @@ export default function PostCard({
     },
   });
 
-  const {
-    isPending: isDeleting,
-    mutate: mutateDeletePost,
-  } = useMutation<AxiosResponse, Error, void>({
+  const { isPending: isDeleting, mutate: mutateDeletePost } = useMutation<
+    AxiosResponse,
+    Error,
+    void
+  >({
     mutationFn: deletePost,
     onSuccess: () => {
       toast.success("Post Deleted");
@@ -87,10 +82,7 @@ export default function PostCard({
     },
   });
 
-  const {
-    isPending: isSendingComment,
-    mutate: mutateComment,
-  } = useMutation({
+  const { isPending: isSendingComment, mutate: mutateComment } = useMutation({
     mutationFn: sendComment,
     onSuccess: () => {
       setCommentInput("");
@@ -101,10 +93,7 @@ export default function PostCard({
     },
   });
 
-  const {
-    isPending: isLiking,
-    mutate: mutateToggleLike,
-  } = useMutation({
+  const { isPending: isLiking, mutate: mutateToggleLike } = useMutation({
     mutationFn: toggleLike,
     onSuccess: () => {
       setIsLiked((previous) => !previous);
@@ -112,6 +101,11 @@ export default function PostCard({
       queryClient.invalidateQueries({ queryKey: ["allPosts"] });
     },
   });
+
+  function handleSendComment() {
+    if (!commentInput.trim() || isSendingComment) return;
+    mutateComment();
+  }
 
   const isPostLiked = isLiked || likedByCurrentUser;
   const likesCount = post.likesCount ?? post.likes?.length ?? 0;
@@ -122,8 +116,7 @@ export default function PostCard({
     <div
       className={`mx-auto my-4 w-full min-w-0 max-w-2xl rounded-2xl border border-lightPink bg-white/80 p-3 transition-opacity sm:p-4 ${
         isDeleting ? "opacity-35" : "opacity-100"
-      }`}
-    >
+      }`}>
       <div className="flex justify-between">
         <div className="flex min-w-0 items-center gap-2">
           <img
@@ -133,14 +126,11 @@ export default function PostCard({
           />
 
           <div className="min-w-0">
-            <p className="wrap-break-word font-medium">
-              {post.user.name}
-            </p>
+            <p className="wrap-break-word font-medium">{post.user.name}</p>
 
             <Link
               to={`/post/${post._id}`}
-              className="text-xs text-gray-500 sm:text-sm"
-            >
+              className="text-xs text-gray-500 sm:text-sm">
               {new Date(post.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
@@ -177,8 +167,7 @@ export default function PostCard({
             <button
               type="button"
               onClick={() => setIsPostExpanded((expanded) => !expanded)}
-              className="mt-1 font-semibold text-burgundy"
-            >
+              className="mt-1 font-semibold text-burgundy">
               {isPostExpanded ? "See less" : "See more"}
             </button>
           )}
@@ -193,95 +182,71 @@ export default function PostCard({
         )}
       </div>
 
-      <div className="my-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap gap-2 sm:gap-4">
-          <button
-            type="button"
-            disabled={isLiking}
-            onClick={() => mutateToggleLike()}
-            className={`btnPost disabled:opacity-60 ${
-              isPostLiked ? "bg-burgundy! text-softRose! border-0!" : ""
-            }`}
-          >
-            {isLiking ? (
-              <Hearts
-                height="25"
-                width="100"
-                color="#fff7fe"
-                ariaLabel="hearts-loading"
-                visible
-              />
-            ) : (
-              <>
-                <AiFillLike />
-                <span>{isPostLiked ? "Liked" : "Like"}</span>
-                {likesCount > 0 && (
-                  <span className="sm:hidden">{likesCount}</span>
-                )}
-              </>
-            )}
-          </button>
+      <div className="my-3 flex w-full flex-nowrap items-center gap-2 sm:gap-4">
+        <button
+          type="button"
+          disabled={isLiking}
+          onClick={() => mutateToggleLike()}
+          aria-label={
+            isLiking ? "Loading likes" : isPostLiked ? "Liked" : "Like"
+          }
+          className={`btnPost min-w-0 flex-1 justify-center gap-1 px-1 disabled:opacity-70 ${
+            isPostLiked ? "bg-burgundy! text-softRose! border-0!" : ""
+          }`}>
+          {isLiking ? (
+            <Hearts
+              height="25"
+              width="40"
+              color={isPostLiked ? "#fff7fe" : "#8f1d65"}
+              ariaLabel="hearts-loading"
+              visible
+            />
+          ) : (
+            <>
+              <AiFillLike className="shrink-0" />
+              <span className={likesCount > 0 ? "hidden sm:inline" : ""}>
+                {isPostLiked ? "Liked" : "Like"}
+              </span>
+              {likesCount > 0 && <span>{likesCount}</span>}
+            </>
+          )}
+        </button>
 
-          <button
-            type="button"
-            className="btnPost"
-            disabled={isSendingComment}
-            onClick={() => mutateComment()}
-          >
-            {isSendingComment ? (
-              <Hearts
-                height="25"
-                width="100"
-                color="#fff7fe"
-                ariaLabel="hearts-loading"
-                visible
-              />
-            ) : (
-              <>
-                <FaRegComment />
-                <span>Comment</span>
-                {commentsCount > 0 && (
-                  <span className="sm:hidden">{commentsCount}</span>
-                )}
-              </>
-            )}
-          </button>
+        <button
+          type="button"
+          disabled={isSendingComment || !commentInput.trim()}
+          onClick={handleSendComment}
+          aria-label={isSendingComment ? "Loading comments" : "Send comment"}
+          className="btnPost min-w-0 flex-1 justify-center gap-1 px-1 disabled:opacity-70">
+          {isSendingComment ? (
+            <Hearts
+              height="25"
+              width="40"
+              color="#8f1d65"
+              ariaLabel="hearts-loading"
+              visible
+            />
+          ) : (
+            <>
+              <FaRegComment className="shrink-0" />
+              <span className={commentsCount > 0 ? "hidden sm:inline" : ""}>
+                Comment
+              </span>
+              {commentsCount > 0 && <span>{commentsCount}</span>}
+            </>
+          )}
+        </button>
 
-          <button type="button" className="btnPost">
-            <CiShare2 />
-            <span>Share</span>
-            {sharesCount > 0 && (
-              <span className="sm:hidden">{sharesCount}</span>
-            )}
-          </button>
-        </div>
-
-        {(likesCount > 0 ||
-          commentsCount > 0 ||
-          sharesCount > 0) && (
-          <div className="hidden w-fit flex-wrap items-center gap-2 sm:flex">
-            {likesCount > 0 && (
-              <div className="flex w-fit shrink-0 items-center gap-2 rounded-xl border border-lightPink px-3 py-2 text-sm text-burgundy">
-                <AiFillLike />
-                <span>{likesCount}</span>
-              </div>
-            )}
-
-            {commentsCount > 0 && (
-              <div className="flex w-fit shrink-0 items-center gap-2 rounded-xl border border-lightPink px-3 py-2 text-sm text-burgundy">
-                <FaRegComment />
-                <span>{commentsCount}</span>
-              </div>
-            )}
-
-            {sharesCount > 0 && (
-              <div className="flex w-fit shrink-0 items-center gap-2 rounded-xl border border-lightPink px-3 py-2 text-sm text-burgundy">
-                <CiShare2 />
-                <span>{sharesCount}</span>
-              </div>
-            )}
-          </div>
-        )}
+        <button
+          type="button"
+          aria-label="Share"
+          className="btnPost min-w-0 flex-1 justify-center gap-1 px-1">
+          <CiShare2 className="shrink-0" />
+          <span className={sharesCount > 0 ? "hidden sm:inline" : ""}>
+            Share
+          </span>
+          {sharesCount > 0 && <span>{sharesCount}</span>}
+        </button>
       </div>
 
       {allComment?.length
@@ -294,21 +259,37 @@ export default function PostCard({
             .map((comment) => (
               <Comment
                 comment={comment}
+                postId={post._id}
                 key={comment._id}
                 isTopComment={comment._id === post.topComment?._id}
               />
             ))
         : post.topComment && (
-            <Comment comment={post.topComment} isTopComment />
+            <Comment comment={post.topComment} postId={post._id} isTopComment />
           )}
 
-      <input
-        value={commentInput}
-        type="text"
-        onChange={(event) => setCommentInput(event.target.value)}
-        placeholder="Enter Your Comment"
-        className="w-full rounded-2xl border border-lightPink p-3 outline-none focus:border-2"
-      />
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleSendComment();
+        }}
+        className="relative mt-3">
+        <input
+          value={commentInput}
+          type="text"
+          onChange={(event) => setCommentInput(event.target.value)}
+          placeholder="Enter Your Comment"
+          className="w-full rounded-2xl border border-lightPink p-3 pr-12 outline-none focus:border-2 "
+        />
+
+        <button
+          type="submit"
+          aria-label="Send comment"
+          disabled={isSendingComment || !commentInput.trim()}
+          className="absolute right-5 top-1/2 -translate-y-1/2 text-burgundy enabled:cursor-pointer disabled:cursor-not-allowed">
+          <BsFillSendFill size={20} />
+        </button>
+      </form>
     </div>
   );
 }

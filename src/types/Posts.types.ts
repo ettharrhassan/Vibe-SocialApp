@@ -1,3 +1,16 @@
+export type CommentLikeType = string | { _id: string };
+
+export interface CommentType {
+  _id: string;
+  content: string;
+  commentCreator: User;
+  post: string;
+  parentComment: string | null;
+  likes: CommentLikeType[];
+  createdAt: string;
+  repliesCount: number;
+}
+
 export interface PostType {
   _id: string;
   body: string;

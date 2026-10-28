@@ -251,13 +251,13 @@ export default function Navbar() {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          <button
+          {/* <button
             type="button"
             aria-label="Messages"
             className="group relative hidden h-10 w-10 items-center justify-center rounded-xl bg-softRose text-burgundy transition-all duration-300 hover:text-primePink sm:flex">
             <IoChatbubbleEllipses size={21} />
             <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-burgundy ring-2 ring-white transition-all duration-300 group-hover:bg-primePink" />
-          </button>
+          </button> */}
 
           {/* Notifications */}
           {token && (
