@@ -78,7 +78,7 @@ export default function Password() {
           modalState.open();
         }}
         className="w-full cursor-pointer rounded-2xl border border-transparent p-3 text-left font-medium text-burgundy transition-all duration-200 hover:border-lightPink hover:bg-softRose">
-        Password
+        Change Password
       </button>
 
       <Modal state={modalState}>
