@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import type { FormEvent } from "react";
+import type { SubmitEvent } from "react";
 import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button, Dropdown, Label, toast } from "@heroui/react";
@@ -7,9 +7,10 @@ import { AiFillLike } from "react-icons/ai";
 import { FaFire, FaTrash } from "react-icons/fa";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { MdEdit } from "react-icons/md";
+import { Hearts } from "react-loader-spinner";
 import { AuthCreatedContext } from "../../context/AuthContext";
 import type { CommentType } from "../../types/Posts.types";
-import { Hearts } from "react-loader-spinner";
+import Reply from "../Reply/Reply";
 
 type CommentProps = {
   comment: CommentType;
@@ -30,9 +31,9 @@ export default function Comment({
   const [isLiked, setIsLiked] = useState(() =>
     Boolean(
       userId &&
-      comment.likes?.some((like) =>
-        typeof like === "string" ? like === userId : like._id === userId,
-      ),
+        comment.likes?.some((like) =>
+          typeof like === "string" ? like === userId : like._id === userId,
+        ),
     ),
   );
   const [likesCount, setLikesCount] = useState(comment.likes?.length ?? 0);
@@ -45,16 +46,20 @@ export default function Comment({
     setIsLiked(
       Boolean(
         userId &&
-        comment.likes?.some((like) =>
-          typeof like === "string" ? like === userId : like._id === userId,
-        ),
+          comment.likes?.some((like) =>
+            typeof like === "string" ? like === userId : like._id === userId,
+          ),
       ),
     );
   }, [comment.content, comment.likes, userId]);
 
   function refreshComments() {
-    queryClient.invalidateQueries({ queryKey: ["comments", postId] });
-    queryClient.invalidateQueries({ queryKey: ["allPosts"] });
+    queryClient.invalidateQueries({
+      queryKey: ["comments", postId],
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["allPosts"],
+    });
   }
 
   const { isPending: isUpdating, mutate: mutateUpdateComment } = useMutation({
@@ -106,7 +111,7 @@ export default function Comment({
     },
   });
 
-  function handleSaveEdit(event: FormEvent<HTMLFormElement>) {
+  function handleSaveEdit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const content = editedContent.trim();
@@ -137,7 +142,8 @@ export default function Comment({
           {isEditing ? (
             <form
               onSubmit={handleSaveEdit}
-              className="mt-2 flex flex-col gap-2">
+              className="mt-2 flex flex-col gap-2"
+            >
               <input
                 value={editedContent}
                 onChange={(event) => setEditedContent(event.target.value)}
@@ -154,7 +160,8 @@ export default function Comment({
                     !editedContent.trim() ||
                     editedContent.trim() === comment.content
                   }
-                  className="rounded-lg bg-burgundy px-3 py-1 text-sm text-white disabled:opacity-50">
+                  className="flex min-w-16 items-center justify-center rounded-lg bg-burgundy px-3 py-1 text-sm text-white disabled:opacity-50"
+                >
                   {isUpdating ? (
                     <Hearts
                       height="20"
@@ -175,7 +182,8 @@ export default function Comment({
                     setIsEditing(false);
                   }}
                   disabled={isUpdating}
-                  className="rounded-lg border border-lightPink px-3 py-1 text-sm text-burgundy">
+                  className="rounded-lg border border-lightPink px-3 py-1 text-sm text-burgundy"
+                >
                   Cancel
                 </button>
               </div>
@@ -191,7 +199,8 @@ export default function Comment({
               <Button
                 aria-label="Comment options"
                 variant="secondary"
-                className="size-9 min-w-9 rounded-full bg-transparent p-0 text-burgundy hover:bg-softRose">
+                className="size-9 min-w-9 rounded-full bg-transparent p-0 text-burgundy hover:bg-softRose"
+              >
                 <HiOutlineDotsHorizontal className="size-6" />
               </Button>
             </Dropdown.Trigger>
@@ -207,11 +216,13 @@ export default function Comment({
                   if (key === "delete-comment") {
                     mutateDeleteComment();
                   }
-                }}>
+                }}
+              >
                 <Dropdown.Item
                   id="edit-comment"
                   textValue="Edit Comment"
-                  className="flex items-center justify-between gap-4 px-3 py-2">
+                  className="flex items-center justify-between gap-4 px-3 py-2"
+                >
                   <Label className="text-burgundy">Edit Comment</Label>
                   <MdEdit className="size-5 text-burgundy" />
                 </Dropdown.Item>
@@ -221,7 +232,8 @@ export default function Comment({
                   textValue="Delete Comment"
                   variant="danger"
                   isDisabled={isDeleting}
-                  className="flex items-center justify-between gap-4 px-3 py-2">
+                  className="flex items-center justify-between gap-4 px-3 py-2"
+                >
                   <Label className="text-burgundy">Delete Comment</Label>
                   <FaTrash className="size-4 text-burgundy" />
                 </Dropdown.Item>
@@ -239,11 +251,18 @@ export default function Comment({
           aria-label={isLiked ? "Unlike comment" : "Like comment"}
           className={`flex items-center gap-1 disabled:opacity-60 ${
             isLiked ? "text-burgundy" : "text-softRose"
-          }`}>
+          }`}
+        >
           <AiFillLike />
           {likesCount > 0 && <span className="text-sm">{likesCount}</span>}
         </button>
       </div>
+
+      <Reply
+        postId={postId}
+        parentCommentId={comment._id}
+        repliesCount={comment.repliesCount}
+      />
     </div>
   );
 }

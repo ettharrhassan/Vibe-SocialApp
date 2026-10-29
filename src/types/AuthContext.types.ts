@@ -7,6 +7,12 @@ export interface AuthUserType {
   email: string;
   photo?: string | null;
   cover?: string | null;
+  followersCount?: number;
+  followerCount?: number;
+  followingCount?: number;
+
+  followers?: number | unknown[] | { count?: number };
+  following?: number | unknown[] | { count?: number };
 }
 
 export interface AuthContextType {

@@ -18,6 +18,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type DropDownProps = {
   isOwner: boolean;
+  isShared?: boolean;
   isSaved: boolean;
   onDelete: () => void;
   post: PostCardPropsType["post"];
@@ -26,6 +27,7 @@ type DropDownProps = {
 
 export default function DropDown({
   isOwner,
+  isShared = false,
   onDelete,
   post,
   onSave,
@@ -115,13 +117,15 @@ export default function DropDown({
             }}>
             {isOwner ? (
               <>
-                <Dropdown.Item
-                  id="edit-file"
-                  textValue="Edit Post"
-                  className="dropDownStyle mt-4">
-                  <Label className="text-burgundy">Edit Post</Label>
-                  <MdEdit className="size-5" />
-                </Dropdown.Item>
+                {!isShared && (
+                  <Dropdown.Item
+                    id="edit-file"
+                    textValue="Edit Post"
+                    className="dropDownStyle mt-4">
+                    <Label className="text-burgundy">Edit Post</Label>
+                    <MdEdit className="size-5" />
+                  </Dropdown.Item>
+                )}
 
                 <Dropdown.Item
                   id="delete-file"
@@ -147,8 +151,8 @@ export default function DropDown({
         </Dropdown.Popover>
       </Dropdown>
 
-      <Modal state={state}>
-        <Modal.Backdrop className="bg-black/50">
+      <Modal state={state} >
+        <Modal.Backdrop className="bg-black/50" >
           <Modal.Container>
             <Modal.Dialog className="relative w-[calc(100vw-2rem)] sm:w-3/4 lg:w-[40%]  max-w-3xl rounded-3xl bg-white px-6 pb-6 pt-8 text-black shadow-xl">
               <Modal.CloseTrigger className="absolute right-5 top-5 bg-primePink hover:bg-softRose hover:border-lightPink border border-transparent hover:text-burgundy text-softRose font-semibold transition-all duration-300" />

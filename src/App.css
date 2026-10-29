@@ -1,0 +1,18 @@
+
+.following-scrollbar {
+  scrollbar-color: var(--color-lightPink) transparent;
+  scrollbar-width: thin;
+}
+
+.following-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.following-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.following-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: var(--color-lightPink);
+}

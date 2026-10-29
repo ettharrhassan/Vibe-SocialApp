@@ -1,12 +1,13 @@
 import { useContext, useState } from "react";
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FaHome, FaSearch, FaBell, FaBars, FaTimes } from "react-icons/fa";
+import { FaHome, FaSearch, FaBell, FaBars, FaTimes, FaBookmark, FaHeart, FaUserPlus } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
-// import { IoChatbubbleEllipses } from "react-icons/io5";
+
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { AuthCreatedContext } from "../../context/AuthContext";
+import ChangePassword from "../../components/ChangePassword/ChangePassword";
 
 type Notification = {
   _id?: string;
@@ -18,6 +19,8 @@ type Notification = {
     name?: string;
   };
   entity?: {
+    _id?: string;
+    id?: string;
     body?: string;
     topComment?: {
       content?: string;
@@ -152,6 +155,8 @@ export default function Navbar() {
 
   function openNotification(item: Notification) {
     const notificationId = item._id ?? item.id;
+    const entityId = item.entityId ?? item.entity?._id ?? item.entity?.id;
+    const postId = typeof entityId === "string" ? entityId : undefined;
 
     setNotificationsOpen(false);
     setProfileOpen(false);
@@ -161,15 +166,15 @@ export default function Navbar() {
       markOneRead.mutate(notificationId);
     }
 
-    if (item.entityType === "post" && item.entityId) {
-      navigate(`/post/${item.entityId}`);
+    if (postId) {
+      navigate(`/post/${postId}`);
     }
   }
 
   return (
     <nav className="sticky top-0 z-50 bg-linear-to-r from-burgundy via-primePink to-lightPink">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        {/* Logo */}
+
         <Link to="/" className="flex shrink-0 items-center gap-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-r from-primePink to-lightPink text-2xl font-bold text-softRose">
             V
@@ -180,7 +185,7 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop search */}
+
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -205,7 +210,7 @@ export default function Navbar() {
           </div>
         </form>
 
-        {/* Desktop navigation */}
+
         <div className="hidden items-center gap-2 lg:flex">
           {navLinks.map(({ name, icon: Icon, path }) => (
             <NavLink
@@ -225,15 +230,8 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Login, signup, or logout */}
-        {token ? (
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="text-softRose cursor-pointer rounded-xl px-4 py-2.5 text-[17px] font-medium transition-all duration-300 hover:bg-softRose hover:text-burgundy">
-            LogOut
-          </button>
-        ) : (
+
+        {!token && (
           <div className="flex items-center gap-2">
             <Link
               to="/login"
@@ -249,17 +247,17 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Actions */}
-        <div className="flex items-center gap-2">
-          {/* <button
-            type="button"
-            aria-label="Messages"
-            className="group relative hidden h-10 w-10 items-center justify-center rounded-xl bg-softRose text-burgundy transition-all duration-300 hover:text-primePink sm:flex">
-            <IoChatbubbleEllipses size={21} />
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-burgundy ring-2 ring-white transition-all duration-300 group-hover:bg-primePink" />
-          </button> */}
 
-          {/* Notifications */}
+        <div className="flex items-center gap-2">
+
+
+
+
+
+
+
+
+
           {token && (
             <div className="relative">
               <button
@@ -278,7 +276,7 @@ export default function Navbar() {
               </button>
 
               {notificationsOpen && (
-                <div className="absolute right-0 z-50 mt-3 w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-lightPink bg-white text-gray-800 shadow-xl">
+                <div className="fixed left-1/2 top-18 z-60 w-[calc(100vw-1rem)] max-w-sm -translate-x-1/2 overflow-hidden rounded-2xl border border-lightPink bg-white text-gray-800 shadow-xl sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-3 sm:w-[min(24rem,calc(100vw-2rem))] sm:translate-x-0">
                   <div className="flex items-center justify-between border-b border-lightPink px-4 py-3">
                     <h2 className="font-semibold text-burgundy">
                       Notifications
@@ -342,7 +340,7 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Profile menu */}
+
           {token && (
             <div className="relative">
               <button
@@ -350,17 +348,18 @@ export default function Navbar() {
                 aria-label="Profile menu"
                 aria-expanded={profileOpen}
                 onClick={toggleProfile}
-                className="hidden h-12 items-center gap-2 rounded-2xl bg-white px-3 sm:flex">
+                className="group hidden h-12 items-center gap-3 rounded-2xl bg-white pl-2 pr-3 sm:flex">
                 <img
                   src={user?.photo || "https://i.pravatar.cc/100?img=12"}
                   alt={user?.name ?? "Profile"}
-                  className="size-11 rounded-full object-cover"
+                  className="size-10 rounded-full object-cover"
                 />
-                <MdKeyboardArrowDown className="text-burgundy" size={20} />
+                <MdKeyboardArrowDown className="text-burgundy transition-colors group-hover:text-primePink" size={22} />
               </button>
 
               {profileOpen && (
                 <div className="absolute right-0 z-50 mt-3 w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-lightPink bg-white p-4 text-gray-800 shadow-xl sm:w-64">
+                  <ChangePassword />
                   <button
                     type="button"
                     onClick={handleSignOut}
@@ -372,42 +371,78 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Mobile menu */}
+
           <button
             type="button"
             aria-label="Toggle navigation menu"
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((open) => !open)}
-            className="flex h-10 w-10 items-center justify-center rounded-xl text-gray-600 hover:bg-gray-100 lg:hidden">
+            className="flex h-10 w-10 items-center justify-center rounded-xl text-burgundy hover:bg-softRose lg:hidden">
             {menuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile navigation and search */}
+
       {menuOpen && (
         <div className="border-t border-gray-100 bg-white p-3 lg:hidden">
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              submitSearch();
+          <button
+            type="button"
+            onClick={() => {
+              setMenuOpen(false);
+              setNotificationsOpen(false);
+              setProfileOpen(false);
+              navigate("/search?tab=posts");
             }}
-            className="mb-3 flex items-center gap-3 rounded-xl bg-gray-100 px-4 py-3 md:hidden">
-            <button
-              type="submit"
-              aria-label="Search"
-              className="cursor-pointer text-gray-400">
-              <FaSearch />
-            </button>
-
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="Search people, posts..."
-              className="w-full bg-transparent text-sm outline-none"
-            />
-          </form>
+            className="flex w-full items-center gap-2 rounded-2xl border border-transparent p-3 text-left font-medium text-burgundy transition-all duration-200 hover:border-lightPink hover:bg-softRose"
+          >
+            <FaSearch />
+            Search
+          </button>
+          {token && (
+            <>
+              <div className="mb-1 flex flex-col gap-1">
+                <NavLink
+                  to="/profile"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex w-full items-center gap-2 rounded-2xl border border-transparent p-3 text-left font-medium text-burgundy transition-all duration-200 hover:border-lightPink hover:bg-softRose"
+                >
+                  <CgProfile size={18} /> Profile
+                </NavLink>
+                <NavLink
+                  to="/saved"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex w-full items-center gap-2 rounded-2xl border border-transparent p-3 text-left font-medium text-burgundy transition-all duration-200 hover:border-lightPink hover:bg-softRose"
+                >
+                  <FaBookmark size={16} /> Saved
+                </NavLink>
+                <NavLink
+                  to="/liked"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex w-full items-center gap-2 rounded-2xl border border-transparent p-3 text-left font-medium text-burgundy transition-all duration-200 hover:border-lightPink hover:bg-softRose"
+                >
+                  <FaHeart size={16} /> Liked
+                </NavLink>
+                <NavLink
+                  to="/suggestions"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex w-full items-center gap-2 rounded-2xl border border-transparent p-3 text-left font-medium text-burgundy transition-all duration-200 hover:border-lightPink hover:bg-softRose"
+                >
+                  <FaUserPlus size={16} /> Follow Suggestions
+                </NavLink>
+              </div>
+              <div className="mt-2 border-t border-lightPink pt-2">
+                <ChangePassword />
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="w-full cursor-pointer rounded-2xl border border-transparent p-3 text-left font-medium text-burgundy transition-all duration-200 hover:border-lightPink hover:bg-softRose"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
     </nav>

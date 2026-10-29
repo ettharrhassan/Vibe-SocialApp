@@ -30,21 +30,32 @@ export default function LikedPosts() {
     },
   });
 
-  if (isLoading) return <p>Loading liked posts...</p>;
-
+  if (isLoading) return (
+    <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-softRose p-2">
+      <p className="text-center text-lg font-medium text-burgundy">Loading liked posts...</p>
+    </main>
+  );
   if (isError) return <p>Couldn't load liked posts.</p>;
 
+  const hasLikedPosts = Boolean(likedPosts?.length);
+
   return (
-    <>
-    <div className="min-h-screen bg-softRose p-2  ">
-      <div className="w-full mx-auto max-w-2xl space-y-6">
-        {likedPosts?.length ? (
-          likedPosts.map((post) => <PostCard key={post._id} post={post} />)
-        ) : (
-          <p>You haven't liked any posts yet.</p>
-        )}
-      </div>
-      </div>
-    </>
+    <main
+      className={`min-h-[calc(100vh-4rem)] bg-softRose p-2 ${
+        hasLikedPosts ? "" : "flex items-center justify-center"
+      }`}
+    >
+      {hasLikedPosts ? (
+        <div className="mx-auto w-full max-w-2xl space-y-6">
+          {likedPosts?.map((post) => (
+            <PostCard key={post._id} post={post} />
+          ))}
+        </div>
+      ) : (
+        <p className="w-full text-center text-lg font-medium text-burgundy">
+          You haven't liked any posts yet.
+        </p>
+      )}
+    </main>
   );
 }

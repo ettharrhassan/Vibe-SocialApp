@@ -7,7 +7,7 @@ import { useContext, useState } from "react";
 import { Hearts } from "react-loader-spinner";
 import type { loginDataType } from "./login.types";
 import { loginSchema } from "../../schemas/login.schema";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { AuthCreatedContext } from "../../context/AuthContext";
 
 export default function Login() {
@@ -57,9 +57,101 @@ export default function Login() {
       <div className="bg-softRose min-h-screen px-4 py-8 sm:py-12 lg:flex lg:items-center">
         <div className="container flex flex-wrap justify-around">
           <div className="md:w-1/3">
+            <h1 className="bg-linear-to-r from-burgundy via-primePink to-lightPink bg-clip-text text-transparent hidden text-5xl font-extrabold tracking-tight sm:text-6xl lg:block">
+              Vibe
+            </h1>
+            <p className="hidden mt-4 text-2xl font-medium leading-snug text-darkText lg:block">
+              Connect with friends and the world around you on Vibe.
+            </p>
+            <div className="mt-6 rounded-2xl border border-lightPink bg-white/80 p-4 shadow-sm backdrop-blur sm:p-5">
+              <p className="bg-linear-to-r from-burgundy via-primePink to-lightPink bg-clip-text text-transparent text-5xl font-bold tracking-tight">
+                About Vibe
+              </p>
+              <p className="mt-1 text-sm font-bold text-darkText">
+                Born in <span className="text-burgundy">Egypt</span>, Made for
+                Everyone
+              </p>
+              <p className="mt-1 text-sm font-bold text-darkText">
+                Where Ideas, Moments & People Come Together
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-lightText">
+                Vibe is a social media app made to bring people together and
+                make sharing feel more real. Share your moments, thoughts, and
+                achievements, connect with people who share your interests,
+                discover new content, and be part of a community where everyone
+                has something to say. With Vibe, it’s not just about likes and
+                follows. it’s about sharing, discovering, and creating
+                meaningful connections.
+              </p>
+              <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <div className="rounded-xl border border-lightPink bg-softRose px-3 py-2">
+                  <p className="text-base font-extrabold text-deep">2026</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-burgundy">
+                    Founded
+                  </p>
+                </div>
+                <div className="rounded-xl border border-lightPink bg-softRose px-3 py-2">
+                  <p className="text-base font-extrabold text-deep">100+</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-burgundy">
+                    COMMUNITIES
+                  </p>
+                </div>
+                <div className="rounded-xl border border-lightPink bg-softRose px-3 py-2">
+                  <p className="text-base font-extrabold text-deep">50K+</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-burgundy">
+                    Users
+                  </p>
+                </div>
+                <div className="rounded-xl border border-lightPink bg-softRose px-3 py-2">
+                  <p className="text-base font-extrabold text-deep">24/7</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-burgundy">
+                    support
+                  </p>
+                </div>
+                <div className="rounded-xl border border-lightPink bg-softRose px-3 py-2">
+                  <p className="text-base font-extrabold text-deep">10K+</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-burgundy">
+                    posts
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="md:w-1/3">
+            <nav
+              aria-label="Account access"
+              className="mb-4 flex w-full rounded-2xl border border-lightPink bg-white/80 p-1.5 shadow-sm"
+            >
+              <NavLink
+                to="/login"
+                end
+                className={({ isActive }) =>
+                  `flex-1 rounded-xl px-4 py-3 text-center font-semibold transition-colors ${
+                    isActive
+                      ? "bg-burgundy text-white shadow-sm"
+                      : "text-burgundy hover:bg-softRose"
+                  }`
+                }
+              >
+                LogIn
+              </NavLink>
+              <NavLink
+                to="/signup"
+                end
+                className={({ isActive }) =>
+                  `flex-1 rounded-xl px-4 py-3 text-center font-semibold transition-colors ${
+                    isActive
+                      ? "bg-burgundy text-white shadow-sm"
+                      : "text-burgundy hover:bg-softRose"
+                  }`
+                }
+              >
+                SignUp
+              </NavLink>
+            </nav>
             <form
               onSubmit={handleSubmit(myHandleSubmit)}
-              className=" mt-6 rounded-2xl border border-lightPink bg-white/80 p-4 shadow-sm backdrop-blur sm:p-5">
+              className="rounded-2xl border border-lightPink bg-white/80 p-4 shadow-sm backdrop-blur sm:p-5">
               <div className="my-5">
                 <h3 className="mt-1 text-3xl font-bold bg-linear-to-r from-burgundy via-primePink to-lightPink bg-clip-text text-transparent">
                   Login To Your Account

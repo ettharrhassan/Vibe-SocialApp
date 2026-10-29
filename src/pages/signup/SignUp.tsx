@@ -7,7 +7,7 @@ import { schema } from "../../schemas/signup.schema";
 import type { signUpDataType } from "./signup.types";
 import { useState } from "react";
 import { Hearts } from "react-loader-spinner";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function SignUp() {
   const { handleSubmit, register, formState } = useForm({
@@ -118,9 +118,40 @@ export default function SignUp() {
             </div>
           </div>
           <div className="md:w-1/3">
+            <nav
+              aria-label="Account access"
+              className="mb-4 flex w-full rounded-2xl border border-lightPink bg-white/80 p-1.5 shadow-sm"
+            >
+              <NavLink
+                to="/login"
+                end
+                className={({ isActive }) =>
+                  `flex-1 rounded-xl px-4 py-3 text-center font-semibold transition-colors ${
+                    isActive
+                      ? "bg-burgundy text-white shadow-sm"
+                      : "text-burgundy hover:bg-softRose"
+                  }`
+                }
+              >
+                LogIn
+              </NavLink>
+              <NavLink
+                to="/signup"
+                end
+                className={({ isActive }) =>
+                  `flex-1 rounded-xl px-4 py-3 text-center font-semibold transition-colors ${
+                    isActive
+                      ? "bg-burgundy text-white shadow-sm"
+                      : "text-burgundy hover:bg-softRose"
+                  }`
+                }
+              >
+                SignUp
+              </NavLink>
+            </nav>
             <form
               onSubmit={handleSubmit(myHandleSubmit)}
-              className=" mt-6 rounded-2xl border border-lightPink bg-white/80 p-4 shadow-sm backdrop-blur sm:p-5">
+              className="rounded-2xl border border-lightPink bg-white/80 p-4 shadow-sm backdrop-blur sm:p-5">
               <div className="my-5">
                 <h3 className="mt-1 text-3xl font-bold bg-linear-to-r from-burgundy via-primePink to-lightPink bg-clip-text text-transparent">
                   Create a new account
@@ -138,13 +169,13 @@ export default function SignUp() {
                   className="focus:border-primePink focus:outline-none focus:ring-0 my-2 border border-lightPink bg-softRose shadow p-3 rounded-xl placeholder:text-lightPink "
                   {...register(
                     "name",
-                    //    {
-                    //   required: { value: true, message: "Name Is Required" },
-                    //   minLength: {
-                    //     value: 3,
-                    //     message: "Name Must Be At Least 3 Letters",
-                    //   },
-                    // }
+
+
+
+
+
+
+
                   )}
                 />
 
@@ -162,13 +193,13 @@ export default function SignUp() {
                   placeholder="Enter A UserName"
                   {...register(
                     "username",
-                    //   {
-                    //   required: { value: true, message: "UserName Is Required" },
-                    //   minLength: {
-                    //     value: 5,
-                    //     message: "UserName Must Be At Least 5 Letters",
-                    //   },
-                    // }
+
+
+
+
+
+
+
                   )}
                   className="my-2 border border-lightPink focus:border-primePink focus:outline-none focus:ring-0 bg-softRose shadow p-3 rounded-xl placeholder:text-lightPink "
                 />
@@ -200,23 +231,23 @@ export default function SignUp() {
                   id="dateOfBirth"
                   {...register(
                     "dateOfBirth",
-                    //   {
-                    //   required: {
-                    //     value: true,
-                    //     message: "Please Enter Your Date Of Birth",
-                    //   },
-                    //   valueAsDate: true,
-                    //   validate: function (value) {
-                    //     const now = new Date();
-                    //     const userAge = now.getFullYear() - value.getFullYear();
-                    //     console.log(userAge);
-                    //     if (userAge > 18) {
-                    //       return true;
-                    //     } else {
-                    //       return "You Must Be At Least 18 Years Old.";
-                    //     }
-                    //   },
-                    // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                   )}
                   className="my-2  border border-lightPink bg-softRose shadow p-3 rounded-xl focus:border-primePink focus:outline-none focus:ring-0"
                 />
@@ -237,13 +268,13 @@ export default function SignUp() {
                     value="male"
                     {...register(
                       "gender",
-                      //   {
-                      //   required: { value: true, message: "Choose Your Gender" },
-                      // }
+
+
+
                     )}
                     id="male"
                     className="my-2 size-4 shrink-0 appearance-none rounded-full
-           border-2 border-lightPink bg-softRose 
+           border-2 border-lightPink bg-softRose
            checked:border-softRose checked:bg-primePink
            focus:outline-none focus:ring-2 focus:ring-lightPink"
                   />
@@ -253,13 +284,13 @@ export default function SignUp() {
                     value="female"
                     {...register(
                       "gender",
-                      //   {
-                      //   required: { value: true, message: "Choose Your Gender" },
-                      // }
+
+
+
                     )}
                     id="female"
                     className="my-2 size-4 shrink-0 appearance-none rounded-full
-           border-2 border-lightPink bg-softRose 
+           border-2 border-lightPink bg-softRose
            checked:border-softRose checked:bg-primePink
            focus:outline-none focus:ring-2 focus:ring-lightPink"
                   />

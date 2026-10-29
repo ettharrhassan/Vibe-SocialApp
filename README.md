@@ -1,75 +1,76 @@
-# React + TypeScript + Vite
+# Vibe Social App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Vibe is a responsive social networking app built with React and TypeScript. Users can create posts, interact with the community, manage their profile, and discover accounts to follow.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Sign up, sign in, sign out, and change password
+- Create posts with text and images
+- Like, comment on, reply to, share, edit, delete, and bookmark posts
+- View profiles and posts from other users
+- Follow and unfollow users
+- Browse follow suggestions and the accounts you follow
+- Search accounts and posts
+- View notifications and mark them as read
+- Responsive mobile navigation and profile views
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19 and TypeScript
+- Vite
+- React Router
+- TanStack Query
+- Axios
+- Tailwind CSS 4
+- HeroUI
+- React Icons
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Install the dependencies:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+   ```bash
+   npm install
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+2. Start the development server:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+   ```bash
+   npm run dev
+   ```
 
+3. Open the local URL printed by Vite in your browser.
+
+Create an account or sign in through the app to use authenticated features.
+
+## Available Scripts
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the Vite development server |
+| `npm run build` | Type-check the app and create a production build in `dist/` |
+| `npm run preview` | Preview the production build locally |
+| `npm run lint` | Run ESLint |
+
+## API
+
+The app uses the Route Posts API:
+
+```text
+https://route-posts.routemisr.com
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Authentication and social actions are sent to this API. The app currently configures the API base URL in its request components and hooks.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Project Structure
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```text
+src/
+├── components/   Reusable UI, posts, comments, search, and follow components
+├── context/      Authentication context
+├── layout/       Navbar, sidebars, and page layout
+├── pages/        Home, authentication, search, and profile pages
+├── types/        TypeScript types
+├── App.tsx       Application routes and providers
+└── App.css       Global styles and theme tokens
 ```

@@ -3,6 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { HiBookmark } from "react-icons/hi";
 import { AuthCreatedContext } from "../../context/AuthContext";
 import { AiFillLike } from "react-icons/ai";
+import FollowingList from "../Follow/FollowingList";
 
 export default function Sidebar() {
   const { user } = useContext(AuthCreatedContext);
@@ -52,6 +53,7 @@ export default function Sidebar() {
         <AiFillLike className="size-6" />
         <span>Liked Posts</span>
       </NavLink>
+      <FollowingList />
     </aside>
   );
 }

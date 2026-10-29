@@ -2,16 +2,16 @@ import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./navbar/Navbar";
 import Sidebar from "../components/Sidebar/Sidebar";
 import Footer from "./footer/Footer";
+import FollowSuggestions from "../components/Follow/FollowSuggestions";
 
 export default function Layout() {
   const { pathname } = useLocation();
 
   const showSidebars =
     pathname === "/" ||
-    pathname === "/home" ||
-    pathname === "/saved" ||
-    pathname === "/liked" ||
-    pathname.startsWith("/post/");
+    ["/home", "/saved", "/liked", "/profile", "/search"].includes(pathname) ||
+    pathname.startsWith("/post/") ||
+    pathname.startsWith("/profile/");
 
   return (
     <>
@@ -29,7 +29,11 @@ export default function Layout() {
         </main>
 
         {showSidebars && (
-          <div className="hidden w-60 shrink-0 lg:block  border-l border-lightPink" />
+          <aside className="hidden min-h-[calc(100vh-4rem)] w-72 shrink-0 self-stretch border-l border-lightPink p-4 lg:block">
+            <div className="sticky top-20">
+              <FollowSuggestions />
+            </div>
+          </aside>
         )}
       </div>
 

@@ -1,8 +1,10 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
 import { AuthCreatedContext } from "../../context/AuthContext";
+import FollowButton from "../Follow/FollowButton";
 
 const API_URL = "https://route-posts.routemisr.com";
 const POSTS_PER_PAGE = 20;
@@ -31,10 +33,15 @@ function normalizeText(value: string) {
 }
 
 export default function SearchResults() {
-  const { token } = useContext(AuthCreatedContext);
+  const { token, userId } = useContext(AuthCreatedContext);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const query = searchParams.get("q") ?? "";
+  const [draftQuery, setDraftQuery] = useState(query);
+
+  useEffect(() => {
+    setDraftQuery(query);
+  }, [query]);
   const activeTab: SearchTab =
     searchParams.get("tab") === "accounts" ? "accounts" : "posts";
 
@@ -154,7 +161,7 @@ export default function SearchResults() {
       `${user.name ?? ""} ${user.username ?? ""}`,
     );
 
-    return searchableText.includes(normalizedQuery);
+    return user._id !== userId && searchableText.includes(normalizedQuery);
   });
 
   const matchingPosts = posts.filter((post) => {
@@ -171,9 +178,32 @@ export default function SearchResults() {
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-6">
-      <h1 className="mb-5 text-2xl font-bold text-burgundy">
+      <h1 className="mb-5 text-lg font-bold leading-tight text-burgundy sm:text-2xl">
         Search results for “{query}”
       </h1>
+
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          setSearchParams({ q: draftQuery.trim(), tab: activeTab });
+        }}
+        className="mb-5 flex items-center gap-3 rounded-xl bg-gray-100 px-3 py-2.5 transition focus-within:ring-2 focus-within:ring-lightPink"
+      >
+        <input
+          type="search"
+          value={draftQuery}
+          onChange={(event) => setDraftQuery(event.target.value)}
+          placeholder="Search people, posts..."
+          className="w-full bg-transparent text-sm outline-none placeholder:text-primePink"
+        />
+        <button
+          type="submit"
+          aria-label="Search"
+          className="text-burgundy transition-transform duration-300 hover:scale-110"
+        >
+          <FaSearch />
+        </button>
+      </form>
 
       <div className="mb-6 flex gap-3 border-b border-lightPink">
         <button
@@ -211,27 +241,23 @@ export default function SearchResults() {
         ) : (
           <div className="space-y-3">
             {matchingAccounts.map((user) => (
-              <Link
+              <div
                 key={user._id}
-                to={`/profile/${user._id}`}
-                className="flex items-center gap-3 rounded-2xl border border-lightPink bg-white p-4 transition hover:bg-softRose"
+                className="flex items-center justify-between gap-3 rounded-2xl border border-lightPink bg-white p-4 transition hover:bg-softRose"
               >
-                <img
-                  src={user.photo || "https://i.pravatar.cc/100?img=12"}
-                  alt={user.name}
-                  className="size-12 rounded-full object-cover"
-                />
-
-                <div>
-                  <p className="font-semibold text-burgundy">{user.name}</p>
-
-                  {user.username && (
-                    <p className="text-sm text-gray-500">
-                      @{user.username}
-                    </p>
-                  )}
-                </div>
-              </Link>
+                <Link to={`/profile/${user._id}`} className="flex min-w-0 items-center gap-3">
+                  <img
+                    src={user.photo || "https://i.pravatar.cc/100?img=12"}
+                    alt={user.name}
+                    className="size-12 shrink-0 rounded-full object-cover"
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-burgundy">{user.name}</p>
+                    {user.username && <p className="truncate text-sm text-gray-500">@{user.username}</p>}
+                  </div>
+                </Link>
+                <FollowButton user={user} compact />
+              </div>
             ))}
           </div>
         )
